@@ -1,6 +1,8 @@
 #include <cstdint>
 #include <vector> 
 #include <format> 
+#include <memory> 
+#include <list> 
 
 enum class OrderType {
     GoodTillCancel, 
@@ -62,6 +64,30 @@ private:
     Price price_; 
     Quantity initialQuantity_; 
     Quantity remainingQuantity_; 
+}; 
+
+using OrderPointer = std::shared_ptr<Order>;
+using OrderPointers = std::list<OrderPointer>; 
+
+class OrderModify {
+public: 
+    OrderModify(OrderId orderId, Side side, Price price, Quantity quantity): 
+    orderId_{orderId}, price_{price}, side_{side}, quantity_{quantity} {}
+
+    OrderId GetOrderId() const {return orderId_; }
+    Price GetPrice() const {return price_; }
+    Side GetSide() const {return side_; }
+    Quantity GetQuantity() const {return quantity_; }
+
+    OrderPointer ToOrderPointer(OrderType type) const {
+        return std::make_shared<Order>(type, GetOrderId(), GetSide(), GetPrice(), GetQuantity()); 
+    }
+
+private: 
+    OrderId orderId_; 
+    Side side_; 
+    Price price_; 
+    Quantity quantity_; 
 }; 
 
 int main() {
